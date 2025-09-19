@@ -6,7 +6,6 @@
 <title>Ticket Booking Chatbot</title>
 <style>
   @import url('https://fonts.googleapis.com/css2?family=Inter&display=swap');
-
   :root {
     --green-btn: #2e8b57;     /* Rich green */
     --green-bg-light: #d6f0d6;
@@ -14,7 +13,6 @@
     --blue-bg-light: #d9eaff;
     --white: #ffffff;
   }
-
   body {
     background: var(--white);
     font-family: 'Inter', sans-serif;
@@ -69,7 +67,6 @@
     color: var(--blue-btn);
     cursor: pointer;
   }
-
   #chatbox {
     background: #fff;
     height: 280px;
@@ -244,7 +241,6 @@
       <button id="sendBtn" type="submit" aria-label="Send message">Send</button>
     </form>
   </div>
-
 <script>
   const chatbox = document.getElementById('chatbox');
   const input = document.getElementById('userInput');
@@ -254,9 +250,9 @@
   const chatContainer = document.getElementById('chatContainer');
   const closeChatBtn = document.getElementById('closeChatBtn');
   const promptMsg = document.getElementById('promptMsg');
-
   const userId = 'user_' + Math.floor(Math.random() * 10000);
-
+  // Backend base URL on Render
+  const backendBaseURL = 'https://render.com/docs/web-services#port-binding';
   // Toggle chat popup
   chatBubble.onclick = () => {
     chatContainer.style.display = 'flex';
@@ -267,7 +263,6 @@
     chatContainer.style.display = 'none';
     chatBubble.style.display = 'flex';
   };
-
   // Append a message to chat, supports 'thinking' state for bot
   function appendMessage(text, sender, thinking = false) {
     const div = document.createElement('div');
@@ -289,7 +284,6 @@
     promptMsg.style.display = 'none';
     return div;
   }
-
   // Show quick reply buttons
   function renderQuickReplies(replies) {
     quickReplies.innerHTML = '';
@@ -303,7 +297,6 @@
       quickReplies.appendChild(btn);
     });
   }
-
   // Send a message: posts to backend /chat and handles UI
   async function sendMessage(message) {
     if (!message || message.trim() === '') return;
@@ -312,37 +305,30 @@
     input.disabled = true;
     sendBtn.disabled = true;
     renderQuickReplies([]);
-
     // Show "bot is typing" message
     const thinkingMsg = appendMessage('', 'bot', true);
-
     try {
       // Wait 1.5 seconds to simulate bot thinking
       await new Promise(resolve => setTimeout(resolve, 1500));
-
-      const response = await fetch('/chat', {
+      const response = await fetch(`${backendBaseURL}/chat`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ userId, message })
       });
       const data = await response.json();
-
       // Remove the thinking message and show actual reply
       thinkingMsg.remove();
       appendMessage(data.reply, 'bot');
-
       renderQuickReplies(data.quickReplies);
     } catch (err) {
       thinkingMsg.remove();
       appendMessage('Error reaching server.', 'bot');
       console.error(err);
     }
-
     input.disabled = false;
     sendBtn.disabled = false;
     input.focus();
   }
-
   // Input event listeners
   sendBtn.addEventListener('click', () => sendMessage(input.value.trim()));
   input.addEventListener('keypress', (e) => {
@@ -351,7 +337,6 @@
       sendMessage(input.value.trim());
     }
   });
-
   // Trigger greeting on first open
   let greeted = false;
   chatContainer.addEventListener('transitionend', () => {
