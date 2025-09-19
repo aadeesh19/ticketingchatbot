@@ -7,9 +7,9 @@
 <style>
   @import url('https://fonts.googleapis.com/css2?family=Inter&display=swap');
   :root {
-    --green-btn: #2e8b57;     /* Rich green */
+    --green-btn: #2e8b57;
     --green-bg-light: #d6f0d6;
-    --blue-btn: #1877f2;      /* Vibrant blue */
+    --blue-btn: #1877f2;
     --blue-bg-light: #d9eaff;
     --white: #ffffff;
   }
@@ -109,7 +109,6 @@
     color: var(--white);
     border-bottom-left-radius: 4px;
   }
-  /* Bot thinking message style */
   .bot-thinking {
     align-self: flex-start;
     font-style: italic;
@@ -225,9 +224,7 @@
 </style>
 </head>
 <body>
-  <!-- Floating Chat Bubble Button -->
   <button id="chatBubble" title="Open Chat">💬</button>
-  <!-- Hidden Chat Popup -->
   <div id="chatContainer" role="region" aria-label="Ticket Booking Chatbot">
     <div id="chatHeader">
       Ticket Booking Chatbot
@@ -252,8 +249,7 @@
   const promptMsg = document.getElementById('promptMsg');
   const userId = 'user_' + Math.floor(Math.random() * 10000);
   // Backend base URL on Render
-  const backendBaseURL = 'https://render.com/docs/web-services#port-binding';
-  // Toggle chat popup
+  const backendBaseURL = 'https://ticketingchatbotback1-1.onrender.com';
   chatBubble.onclick = () => {
     chatContainer.style.display = 'flex';
     input.focus();
@@ -263,7 +259,6 @@
     chatContainer.style.display = 'none';
     chatBubble.style.display = 'flex';
   };
-  // Append a message to chat, supports 'thinking' state for bot
   function appendMessage(text, sender, thinking = false) {
     const div = document.createElement('div');
     div.classList.add('message');
@@ -272,7 +267,6 @@
       div.textContent = "Bot is typing...";
     } else {
       div.classList.add(sender);
-      // Make URLs clickable
       const urlRegex = /(https?:\/\/[^\s]+)/g;
       if (text) {
         text = text.replace(urlRegex, url => `<a href="${url}" target="_blank" rel="noopener noreferrer">${url}</a>`);
@@ -284,7 +278,6 @@
     promptMsg.style.display = 'none';
     return div;
   }
-  // Show quick reply buttons
   function renderQuickReplies(replies) {
     quickReplies.innerHTML = '';
     if (!replies || replies.length === 0) return;
@@ -297,7 +290,6 @@
       quickReplies.appendChild(btn);
     });
   }
-  // Send a message: posts to backend /chat and handles UI
   async function sendMessage(message) {
     if (!message || message.trim() === '') return;
     appendMessage(message, 'user');
@@ -305,10 +297,8 @@
     input.disabled = true;
     sendBtn.disabled = true;
     renderQuickReplies([]);
-    // Show "bot is typing" message
     const thinkingMsg = appendMessage('', 'bot', true);
     try {
-      // Wait 1.5 seconds to simulate bot thinking
       await new Promise(resolve => setTimeout(resolve, 1500));
       const response = await fetch(`${backendBaseURL}/chat`, {
         method: 'POST',
@@ -316,7 +306,6 @@
         body: JSON.stringify({ userId, message })
       });
       const data = await response.json();
-      // Remove the thinking message and show actual reply
       thinkingMsg.remove();
       appendMessage(data.reply, 'bot');
       renderQuickReplies(data.quickReplies);
@@ -329,7 +318,6 @@
     sendBtn.disabled = false;
     input.focus();
   }
-  // Input event listeners
   sendBtn.addEventListener('click', () => sendMessage(input.value.trim()));
   input.addEventListener('keypress', (e) => {
     if (e.key === 'Enter') {
@@ -337,11 +325,10 @@
       sendMessage(input.value.trim());
     }
   });
-  // Trigger greeting on first open
   let greeted = false;
   chatContainer.addEventListener('transitionend', () => {
     if (!greeted && chatContainer.style.display === 'flex') {
-      sendMessage(''); // triggers greeting
+      sendMessage('');
       greeted = true;
     }
   });
